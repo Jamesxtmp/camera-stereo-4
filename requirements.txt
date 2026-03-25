@@ -1,0 +1,17 @@
+# Configuración de repositorios para CUDA 12.6 (RTX Serie 50)
+--extra-index-url https://download.pytorch.org/whl/nightly/cu126
+--pre
+
+# Motor de IA
+torch
+torchvision
+torchaudio
+
+# Herramientas de YOLO y ONNX
+ultralytics
+onnxruntime-gpu
+
+# Visión Artificial y Utilidades
+opencv-python>=4.13.0.92
+cv2-enumerate-cameras
+numpy
