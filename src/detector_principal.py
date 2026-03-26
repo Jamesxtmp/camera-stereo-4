@@ -3,6 +3,10 @@ import os
 import time
 import torch
 from app_config import (
+    BLUE_HSV_LOWER,
+    BLUE_HSV_UPPER,
+    BLUE_MIN_AREA_PX,
+    BLUE_ROI_Y_MIN_RATIO,
     CALIBRATION_FILE,
     CAMERA_HEIGHT,
     CAMERA_NAME,
@@ -10,6 +14,7 @@ from app_config import (
     DETECTION_HOLD_FRAMES,
     DISTANCE_TO_CM_SCALE,
     DISTANCE_UNIT_LABEL,
+    FLOOR_HOMOGRAPHY_FILE,
     LEFT_FOLDER,
     MAX_STEREO_TARGETS,
     MODEL_PATH,
@@ -18,6 +23,7 @@ from app_config import (
     YOLO_IMGSZ,
 )
 from camera_utils import abrir_camara_estereo
+from blue_floor_utils import cargar_homografia_piso, estimar_borde_azul_mas_cercano_cm
 from detection_utils import cargar_modelo, obtener_detecciones_latas
 from stereo_utils import (
     cargar_calibracion,
@@ -92,6 +98,12 @@ if calibration is not None:
         print("ADVERTENCIA: No se pudo obtener fx/baseline válidos para distancia estéreo.")
 else:
     print(f"ADVERTENCIA: No se encontró calibración válida en {CALIBRATION_FILE}.")
+
+floor_calib = cargar_homografia_piso(FLOOR_HOMOGRAPHY_FILE)
+if floor_calib is None:
+    print(f"ADVERTENCIA: No se encontro homografia de piso en {FLOOR_HOMOGRAPHY_FILE}")
+else:
+    print("Homografia de piso cargada correctamente.")
 
 cap = abrir_camara_estereo(CAMERA_NAME, CAMERA_WIDTH, CAMERA_HEIGHT)
 
@@ -183,6 +195,45 @@ while True:
         nearest_idx=nearest_idx,
         unit_label=DISTANCE_UNIT_LABEL,
     )
+
+    blue_info = None
+    if floor_calib is not None:
+        blue_info = estimar_borde_azul_mas_cercano_cm(
+            left_frame_rect,
+            floor_calib,
+            BLUE_HSV_LOWER,
+            BLUE_HSV_UPPER,
+            roi_y_min_ratio=BLUE_ROI_Y_MIN_RATIO,
+            min_area_px=BLUE_MIN_AREA_PX,
+        )
+
+    if blue_info is not None:
+        blue_mask = blue_info["mask"]
+        if blue_mask is not None:
+            tint = preview_annotated.copy()
+            tint[blue_mask > 0] = (255, 80, 40)
+            preview_annotated = cv2.addWeighted(preview_annotated, 0.78, tint, 0.22, 0.0)
+
+        blue_dist_cm = blue_info["distance_cm"]
+        nearest_blue_px = blue_info["nearest_point_px"]
+        if nearest_blue_px is not None:
+            cv2.circle(preview_annotated, nearest_blue_px, 6, (255, 0, 0), -1)
+
+        text = "Borde azul: sin deteccion"
+        color = (0, 0, 255)
+        if blue_dist_cm is not None:
+            text = f"Borde azul: {blue_dist_cm:.1f} cm"
+            color = (0, 255, 255)
+
+        cv2.putText(
+            preview_annotated,
+            text,
+            (15, 62),
+            cv2.FONT_HERSHEY_SIMPLEX,
+            0.75,
+            color,
+            2,
+        )
 
     # Mostrar el resultado con cajas
     cv2.imshow('Deteccion de Latas - Stereo Left', preview_annotated)

@@ -7,6 +7,7 @@ LEFT_FOLDER = os.path.join(DATASET_FOLDER, "left")
 
 MODEL_PATH = os.path.join(BASE_DIR, "models", "exp.onnx")
 CALIBRATION_FILE = os.path.join(BASE_DIR, "configuration", "calibracion_estereo.npz")
+FLOOR_HOMOGRAPHY_FILE = os.path.join(BASE_DIR, "configuration", "homografia_piso.json")
 
 CAMERA_NAME = "3D USB Camera"
 CAMERA_WIDTH = 2560
@@ -32,3 +33,9 @@ DETECTION_HOLD_FRAMES = 8
 # - si esta en m  -> 100.0
 DISTANCE_TO_CM_SCALE = 0.1
 DISTANCE_UNIT_LABEL = "cm"
+
+# Segmentacion inicial para delimitante azul en piso.
+BLUE_HSV_LOWER = (85, 50, 40)
+BLUE_HSV_UPPER = (140, 255, 255)
+BLUE_ROI_Y_MIN_RATIO = 0.45
+BLUE_MIN_AREA_PX = 900

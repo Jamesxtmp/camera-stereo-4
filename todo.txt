@@ -1,28 +1,19 @@
 Siguiente plan recomendado (orden exacto)
 
 1. Implementar modulo de delimitante azul en piso y distancia en cm al borde mas cercano.
-  1.1 Definir marco de referencia del piso
-  1.2 Escoge un punto de referencia del robot en imagen (normalmente el centro inferior).
-  1.3 Define ejes en BEV:
-    X lateral (izq-der)
-    Y frontal (distancia hacia adelante)
-  1.4 Define escala de salida, por ejemplo 1 px = 1 cm o 1 px = 0.5 cm.
-  1.5 Calibrar homografía piso
-  1.6 Coloca en el suelo 4+ puntos conocidos (cinta métrica o tablero plano).
-  1.7 Marca sus coordenadas en imagen original (u, v).
-  1.8 Asigna coordenadas reales en piso (Xcm, Ycm).
-  1.9 Calcula la matriz H con getPerspectiveTransform o findHomography.
-  1.10 Guarda H en archivo de configuración.
-  1.11 Generar BEV en tiempo real
-  1.12 Toma el frame izquierdo ya rectificado.
-  1.13 Aplica warpPerspective con H para obtener vista cenital.
-  1.14 En esa vista, una línea horizontal suele corresponder a misma distancia frontal aproximada.
-  1.15 Detectar delimitante azul en BEV
-  1.16 Segmenta azul en HSV (rango amplio inicial).
-Limpia máscara (open/close y filtro por área mínima).
 
-Extrae borde más cercano al robot:
 2. Integrar logica de estados de seguridad para movimiento.
+
+  Usa umbral de retroceso con margen, no exactamente 0.
+  Ejemplo:
+    retroceder cuando la distancia estimada sea menor o igual a 5 cm.
+    Agrega histéresis para evitar temblor.
+  Ejemplo:
+    Entra a retroceso en 5 cm.
+    Sale de retroceso recién en 12 cm.
+  Exige estabilidad por varios frames.
+    Ejemplo: activar retroceso solo si la condición se cumple 3 a 5 frames seguidos.
+
 3. Recopilar dataset de obstaculos desconocidos y entrenar clase generica de obstaculo.
 4. Añadir detector del contenedor rojo con filtro geometrico.
 5. Hacer pruebas de campo con metricas: precision de deteccion, error de distancia en cm, tasa de falsas perdidas.
