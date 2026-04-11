@@ -11,11 +11,11 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 from src.camera_utils import (
-    DROIDCAM_FIXED_INDEX,
     CAMERA_BACKENDS,
     abrir_camara_por_indice,
     abrir_camara_con_fallback,
 )
+from src.app_config import DROIDCAM_FIXED_INDEX
 
 class CameraApp(QMainWindow):
     def __init__(self):
@@ -218,7 +218,7 @@ class CameraApp(QMainWindow):
                         self.btn_conectar.setStyleSheet("background-color: #27ae60; color: white; height: 35px; border-radius: 5px;")
                         for s in self.sliders.values():
                             s.setEnabled(False)
-                        self.video_label.setText("Sin frames en idx fijo 1402")
+                        self.video_label.setText(f"Sin frames en idx fijo {DROIDCAM_FIXED_INDEX}")
 
     def closeEvent(self, event):
         """Asegura liberar la cámara si cierras la ventana"""

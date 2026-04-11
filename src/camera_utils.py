@@ -2,7 +2,6 @@ import cv2
 from cv2_enumerate_cameras import enumerate_cameras
 
 
-DROIDCAM_FIXED_INDEX = 1402
 CAMERA_BACKENDS = [
     ("Auto", cv2.CAP_ANY),
     ("DirectShow", cv2.CAP_DSHOW),

@@ -9,6 +9,7 @@ from app_config import (
     BLUE_MIN_AREA_PX,
     BLUE_ROI_Y_MIN_RATIO,
     CAMERA_HEIGHT,
+    DROIDCAM_FIXED_INDEX,
     CAMERA_WIDTH,
     DETECTION_HOLD_FRAMES,
     ENABLE_BLUE_FLOOR,
@@ -23,7 +24,7 @@ from app_config import (
     YOLO_EVERY_N_FRAMES,
     YOLO_IMGSZ,
 )
-from camera_utils import DROIDCAM_FIXED_INDEX, abrir_camara_con_fallback
+from camera_utils import abrir_camara_con_fallback
 from blue_floor_utils import cargar_homografia_piso, estimar_borde_azul_mas_cercano_cm
 from detection_utils import cargar_modelo, obtener_detecciones_latas
 from visualization_utils import dibujar_detecciones
