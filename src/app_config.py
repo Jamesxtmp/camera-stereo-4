@@ -5,34 +5,31 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATASET_FOLDER = "dataset_stereo"
 LEFT_FOLDER = os.path.join(DATASET_FOLDER, "left")
 
-MODEL_PATH = os.path.join(BASE_DIR, "models", "exp.onnx")
+MODEL_PATH = os.path.join(BASE_DIR, "models", "Limpia.onnx")
 CALIBRATION_FILE = os.path.join(BASE_DIR, "configuration", "calibracion_estereo.npz")
 FLOOR_HOMOGRAPHY_FILE = os.path.join(BASE_DIR, "configuration", "homografia_piso.json")
 
 CAMERA_NAME = "3D USB Camera"
-CAMERA_WIDTH = 2560
-CAMERA_HEIGHT = 720
+CAMERA_WIDTH = 640
+CAMERA_HEIGHT = 360
 
 YOLO_CONF = 0.35
-YOLO_IMGSZ = 960
+YOLO_IMGSZ = 320
+YOLO_EVERY_N_FRAMES = 8
+BLUE_EVERY_N_FRAMES = 10
 
-# Calcula distancia estereo una vez cada N frames para reducir carga.
-STEREO_EVERY_N_FRAMES = 5
+# Resolucion usada solo para inferencia (se reescala desde el frame de camara).
+INFER_FRAME_WIDTH = 416
+INFER_FRAME_HEIGHT = 234
 
-# Limita cuantas detecciones se usan para estereo por frame de calculo.
-MAX_STEREO_TARGETS = 2
+# Limita cuantas detecciones se dibujan para reducir costo de render.
+MAX_DRAW_DETECTIONS = 3
+
+# Desactivar por defecto para maximizar FPS en CPU.
+ENABLE_BLUE_FLOOR = False
 
 # Mantiene cajas por unos frames cuando se pierde deteccion temporalmente.
-DETECTION_HOLD_FRAMES = 8
-
-# Conversion de unidad de calibracion a centimetros.
-# En esta calibracion T esta en milimetros (baseline ~53.54), por eso la escala correcta es 0.1.
-# Referencias utiles:
-# - si esta en mm -> 0.1
-# - si esta en cm -> 1.0
-# - si esta en m  -> 100.0
-DISTANCE_TO_CM_SCALE = 0.1
-DISTANCE_UNIT_LABEL = "cm"
+DETECTION_HOLD_FRAMES = 20
 
 # Segmentacion inicial para delimitante azul en piso.
 BLUE_HSV_LOWER = (85, 50, 40)
