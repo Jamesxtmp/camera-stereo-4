@@ -1,0 +1,70 @@
+#include "BluetoothSerial.h"
+#include "esp_mac.h" 
+
+BluetoothSerial SerialBT;
+
+// Pines Motor Izquierdo (IBT-2 #1)
+const int L_PWM_IZQ = 21;
+const int R_PWM_IZQ = 19;
+
+// Pines Motor Derecho (IBT-2 #2)
+const int L_PWM_DER = 23;
+const int R_PWM_DER = 22;
+
+const int vel = 200; // Velocidad de giro (0-255)
+
+void setup() {
+  Serial.begin(115200);
+  
+  // Obtener MAC de forma nativa
+  uint8_t mac[6];
+  esp_read_mac(mac, ESP_MAC_WIFI_STA);
+  Serial.printf("-----------------------------------\n");
+  Serial.printf("Direccion MAC: %02X:%02X:%02X:%02X:%02X:%02X\n", mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
+  Serial.printf("-----------------------------------\n");
+
+  // Iniciar Bluetooth
+  SerialBT.begin("Carrito_Oruga_Jaime");
+  
+  // Configuración de pines PWM
+  pinMode(L_PWM_IZQ, OUTPUT); 
+  pinMode(R_PWM_IZQ, OUTPUT); 
+  pinMode(L_PWM_DER, OUTPUT); 
+  pinMode(R_PWM_DER, OUTPUT);
+
+  Serial.println("Sistema listo. Esperando comandos Bluetooth (F, B, L, R, S)...");
+}
+
+// Función para controlar los motores
+void mover(int izqR, int izqL, int derR, int derL) {
+  analogWrite(R_PWM_IZQ, izqR);
+  analogWrite(L_PWM_IZQ, izqL);
+  analogWrite(R_PWM_DER, derR);
+  analogWrite(L_PWM_DER, derL);
+}
+
+void loop() {
+  if (SerialBT.available()) {
+    char comando = SerialBT.read();
+    Serial.print("Comando recibido: "); Serial.println(comando);
+
+    switch (comando) {
+      case 'F': // Adelante
+        mover(vel, 0, vel, 0);
+        break;
+      case 'B': // Atrás
+        mover(0, vel, 0, vel);
+        break;
+      case 'L': // Giro Izquierda (Tanque)
+        mover(0, vel, vel, 0);
+        break;
+      case 'R': // Giro Derecha (Tanque)
+        mover(vel, 0, 0, vel);
+        break;
+      case 'S': // Detener
+        mover(0, 0, 0, 0);
+        break;
+    }
+  }
+  delay(20);
+}
